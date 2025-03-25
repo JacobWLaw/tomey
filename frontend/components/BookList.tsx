@@ -23,6 +23,7 @@ export default function BookList() {
       fontWeight: 'bold',
       marginBottom: theme.spacing.md,
       color: theme.colors.text,
+      marginTop: 50
     },
     listContent: {
       paddingBottom: theme.spacing.xl,

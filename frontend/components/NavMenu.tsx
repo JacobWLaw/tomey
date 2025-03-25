@@ -2,6 +2,7 @@ import React, { useState } from "react";
 import { View, Text, TouchableOpacity, Animated, StyleSheet } from "react-native";
 import { useThemedStyles } from "../theme/useThemedStyles";
 import { useTheme } from "../theme/ThemeContext";
+import { router } from "expo-router";
 
 export default function NavMenu() {
   const [open, setOpen] = useState(false);
@@ -20,6 +21,7 @@ export default function NavMenu() {
       shadowOpacity: 0.2,
       shadowRadius: 5,
       transform: [{ translateX: open ? 0 : -250 }],
+      zIndex: 1
     },
     menuItem: {
       paddingVertical: theme.spacing.sm,
@@ -40,6 +42,7 @@ export default function NavMenu() {
     },
     toggleButton: {
       position: "absolute",
+      zIndex: 2,
       top: theme.spacing.md,
       left: theme.spacing.md,
       backgroundColor: theme.colors.primary,
@@ -52,6 +55,11 @@ export default function NavMenu() {
     },
   }));
 
+  const handleNavigation = (path: string) => {
+    router.push(path);
+    setOpen(false);
+  };
+
   return (
     <>
       {open && (
@@ -63,21 +71,21 @@ export default function NavMenu() {
       <Animated.View style={styles.container}>
         <TouchableOpacity
           style={styles.menuItem}
-          onPress={() => console.log("Menu Item 1")}
+          onPress={() => handleNavigation("/")}
         >
-          <Text style={styles.menuText}>Menu Item 1</Text>
+          <Text style={styles.menuText}>Home</Text>
         </TouchableOpacity>
         <TouchableOpacity
           style={styles.menuItem}
-          onPress={() => console.log("Menu Item 2")}
+          onPress={() => handleNavigation("/books")}
         >
-          <Text style={styles.menuText}>Menu Item 2</Text>
+          <Text style={styles.menuText}>Books</Text>
         </TouchableOpacity>
         <TouchableOpacity
           style={styles.menuItem}
-          onPress={() => console.log("Menu Item 3")}
+          onPress={() => handleNavigation("/settings")}
         >
-          <Text style={styles.menuText}>Menu Item 3</Text>
+          <Text style={styles.menuText}>Settings</Text>
         </TouchableOpacity>
       </Animated.View>
       <TouchableOpacity
