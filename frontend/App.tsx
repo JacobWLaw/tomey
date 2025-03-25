@@ -5,6 +5,8 @@ import BookList from './components/BookList';
 import { ThemeProvider, useTheme } from './theme/ThemeContext';
 import { useThemedStyles } from './theme/useThemedStyles';
 import NavMenu from './components/NavMenu';
+import { queryClient } from './queryClient';
+import { QueryClientProvider } from '@tanstack/react-query';
 
 // App content component that uses the theme
 const AppContent = () => {
@@ -34,8 +36,10 @@ const AppContent = () => {
 // Main App component with ThemeProvider
 export default function App() {
   return (
-    <ThemeProvider>
-      <AppContent />
-    </ThemeProvider>
+    <QueryClientProvider client={queryClient}>
+      <ThemeProvider>
+        <AppContent />
+      </ThemeProvider>
+    </QueryClientProvider>
   );
 }

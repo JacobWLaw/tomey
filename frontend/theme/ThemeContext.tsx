@@ -37,7 +37,11 @@ export const ThemeProvider = ({ children }: ThemeProviderProps) => {
   }, [systemColorScheme, themeMode]);
   
   const toggleTheme = () => {
+    if(themeMode === 'system'){
+      setThemeMode(systemColorScheme === 'dark' ? 'light' : 'dark')
+    } else {
     setThemeMode(prev => prev === 'dark' ? 'light' : 'dark');
+    }
   };
   
   const setTheme = (mode: ThemeMode) => {

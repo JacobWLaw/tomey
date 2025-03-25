@@ -1,5 +1,5 @@
 import React, { useEffect, useRef, useState } from "react";
-import { View, Text, TouchableOpacity, Animated, StyleSheet, Platform } from "react-native";
+import { View, Text, TouchableOpacity, Animated, StyleSheet, Platform, Dimensions, useWindowDimensions } from "react-native";
 import { useThemedStyles } from "../theme/useThemedStyles";
 import { useTheme } from "../theme/ThemeContext";
 import { router } from "expo-router";
@@ -8,19 +8,29 @@ import ThemeToggleButton from "./ThemeToggle";
 export default function NavMenu() {
   const [open, setOpen] = useState(false);
   const { theme } = useTheme();
+  const { width } = useWindowDimensions()
+  const isLargeScreen = width >= 768;
 
-    // Create an animated value for the menu position
-    const slideAnim = useRef(new Animated.Value(-325)).current;
+  // Create an animated value for the menu position
+  const slideAnim = useRef(new Animated.Value(-325)).current;
   
-    // Update animation when open state changes
-    useEffect(() => {
-      Animated.timing(slideAnim, {
-        toValue: open ? 0 : -325,
-        duration: 200, // Animation duration in ms
-        useNativeDriver: true, // Enable native driver for better performance
-      }).start();
-    }, [open, slideAnim]);
+  // Track screen dimensions
+  useEffect(() => {
+    if (isLargeScreen) {
+      setOpen(true); // Always open on large screens
+    } else {
+      setOpen(false); // Always closed by default on small screens
+    }
+  }, [isLargeScreen]);
 
+  // Update animation when open state or screen size changes
+  useEffect(() => {
+    Animated.timing(slideAnim, {
+      toValue: open || isLargeScreen ? 0 : -325,
+      duration: 200, // Animation duration in ms
+      useNativeDriver: true, // Enable native driver for better performance
+    }).start();
+  }, [open]);
     
   const styles = useThemedStyles((theme) => ({
     container: {
@@ -36,6 +46,21 @@ export default function NavMenu() {
       shadowOpacity: 0.2,
       shadowRadius: 5,
       zIndex: 10
+    },
+    fixedContainer: {
+      position: "absolute",
+      top: 0,
+      left: 0,
+      height: "100%",
+      width: 300,
+      backgroundColor: theme.colors.card,
+      padding: theme.spacing.md,
+      shadowColor: "#000",
+      shadowOffset: { width: 2, height: 0 },
+      shadowOpacity: 0.2,
+      shadowRadius: 5,
+      zIndex: 10,
+      transform: [{ translateX: 0 }]
     },
     menuItem: {
       paddingVertical: theme.spacing.sm,
@@ -64,8 +89,12 @@ export default function NavMenu() {
       backgroundColor: theme.colors.primary,
       padding: theme.spacing.sm,
       borderRadius: 5,
+      width: 35,
+      height: 35,
+      justifyContent: "center"
     },
     toggleButtonText: {
+      textAlign: "center",
       color: theme.colors.text,
       fontSize: theme.fontSize.medium,
     },
@@ -98,6 +127,9 @@ export default function NavMenu() {
       backgroundColor: "transparent", // Ensures click is captured
       ...(Platform.OS === 'web' ? { cursor: 'default' } as any : {})
     },
+    mainContent: {
+      marginLeft: isLargeScreen ? 300 : 0, // Add margin for content when menu is fixed
+    }
   }));
 
   const webStyles = Platform.OS === 'web' ? {
@@ -108,25 +140,27 @@ export default function NavMenu() {
 
   const handleNavigation = (path: string) => {
     router.push(path);
-    setOpen(false);
+    if (!isLargeScreen) {
+      setOpen(false);
+    }
   };
 
   return (
     <>
-      {open && (
+      {open && !isLargeScreen && (
         <TouchableOpacity
           style={[styles.overlay, Platform.OS === 'web' && webStyles.defaultCursor]}
-          onPress={() => setOpen(false)}
           activeOpacity={1}
+          onPress={() => setOpen(false)}
         />
       )}
+      
       <Animated.View 
         style={[
-          styles.container, 
-          { transform: [{ translateX: slideAnim }] } // Apply the animation here
+          isLargeScreen ? styles.fixedContainer : styles.container, 
+          !isLargeScreen && { transform: [{ translateX: slideAnim }] }
         ]}
       >
-        
         {/* Navigation menu items */}
         <TouchableOpacity
           style={styles.menuItem}
@@ -147,18 +181,20 @@ export default function NavMenu() {
           <Text style={styles.menuText}>Settings</Text>
         </TouchableOpacity>
       </Animated.View>
-      {!open && (
-      <TouchableOpacity
-        style={styles.toggleButton}
-        onPress={() => setOpen(!open)}
+
+      
+      {!isLargeScreen && !open && (
+        <TouchableOpacity
+          style={styles.toggleButton}
+          onPress={() => setOpen(!open)}
         >
-    <Text style={styles.toggleButtonText}>Open</Text>
-  </TouchableOpacity>
-)}
-      {open && (
+          <Text style={styles.toggleButtonText}>☰</Text>
+        </TouchableOpacity>
+      )}
+      
+      {open && !isLargeScreen && (
         <TouchableOpacity
           style={styles.contentTouchArea}
-          onPress={() => setOpen(false)}
           activeOpacity={1}
         />
       )}

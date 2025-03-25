@@ -6,6 +6,8 @@ import { ThemeProvider, useTheme } from '../theme/ThemeContext';
 import { useThemedStyles } from '../theme/useThemedStyles';
 import NavMenu from '../components/NavMenu';
 import ThemeToggleButton from '../components/ThemeToggle';
+import { QueryClientProvider } from '@tanstack/react-query';
+import { queryClient } from '../queryClient';
 
 const AppContent = () => {
   const { theme, isDark } = useTheme();
@@ -61,8 +63,10 @@ const AppContent = () => {
 
 export default function Layout() {
   return (
-    <ThemeProvider>
-      <AppContent />
-    </ThemeProvider>
+    <QueryClientProvider client={queryClient}>
+      <ThemeProvider>
+        <AppContent />
+      </ThemeProvider>
+    </QueryClientProvider>
   );
 }
