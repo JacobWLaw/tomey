@@ -2,20 +2,26 @@ import React, { createContext, useContext, useState, useEffect } from 'react';
 import { useColorScheme } from 'react-native';
 import { AppTheme, lightTheme, darkTheme } from './theme';
 
-type ThemeContextType = {
+export type ThemeMode = 'light' | 'dark' | 'system';
+
+export type ThemeContextType = {
   theme: AppTheme;
   isDark: boolean;
   toggleTheme: () => void;
-  setTheme: (theme: 'light' | 'dark' | 'system') => void;
+  setTheme: (theme: ThemeMode) => void;
+};
+
+interface ThemeProviderProps {
+  children: React.ReactNode;
 };
 
 const ThemeContext = createContext<ThemeContextType | undefined>(undefined);
 
-export const ThemeProvider: React.FC<{ children: React.ReactNode }> = ({ children }) => {
+export const ThemeProvider = ({ children }: ThemeProviderProps) => {
   const systemColorScheme = useColorScheme();
-  const [themeMode, setThemeMode] = useState<'light' | 'dark' | 'system'>('system');
+  const [themeMode, setThemeMode] = useState<ThemeMode>('system');
   
-  // Determine the active theme based on themeMode and system settings
+  // checks system theme and themeMode
   const getActiveTheme = (): AppTheme => {
     if (themeMode === 'system') {
       return systemColorScheme === 'dark' ? darkTheme : lightTheme;
@@ -25,7 +31,7 @@ export const ThemeProvider: React.FC<{ children: React.ReactNode }> = ({ childre
   
   const [theme, setActiveTheme] = useState<AppTheme>(getActiveTheme());
   
-  // Update theme when system theme changes or themeMode changes
+  // update the theme on change
   useEffect(() => {
     setActiveTheme(getActiveTheme());
   }, [systemColorScheme, themeMode]);
@@ -34,7 +40,7 @@ export const ThemeProvider: React.FC<{ children: React.ReactNode }> = ({ childre
     setThemeMode(prev => prev === 'dark' ? 'light' : 'dark');
   };
   
-  const setTheme = (mode: 'light' | 'dark' | 'system') => {
+  const setTheme = (mode: ThemeMode) => {
     setThemeMode(mode);
   };
   

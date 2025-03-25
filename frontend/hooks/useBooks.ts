@@ -10,7 +10,6 @@ export function useBooks() {
     async function fetchBooks() {
       try {
         setLoading(true);
-        // Connect to your API instead of Supabase directly
         const response = await fetch('http://localhost:4000/api/books');
         
         if (!response.ok) {

@@ -5,6 +5,7 @@ import { Slot } from 'expo-router';
 import { ThemeProvider, useTheme } from '../theme/ThemeContext';
 import { useThemedStyles } from '../theme/useThemedStyles';
 import NavMenu from '../components/NavMenu';
+import ThemeToggleButton from '../components/ThemeToggle';
 
 const AppContent = () => {
   const { theme, isDark } = useTheme();
@@ -17,11 +18,13 @@ const AppContent = () => {
     content: {
       flex: 1,
       padding: theme.spacing.md,
+      
     },
     header: {
+      flexDirection: "row",
+      justifyContent: "space-between",
       height: 60,
       backgroundColor: theme.colors.card,
-      justifyContent: 'center',
       alignItems: 'center',
       borderBottomWidth: 1,
       borderBottomColor: theme.colors.border,
@@ -31,10 +34,12 @@ const AppContent = () => {
       fontSize: theme.fontSize.xlarge,
       fontWeight: 'bold',
       color: theme.colors.text,
+      marginLeft: theme.spacing.sm,
+      marginBottom: theme.spacing.md
     },
     mainContent: {
       flex: 1,
-    }
+    },
   }));
 
   return (
@@ -42,6 +47,7 @@ const AppContent = () => {
       <View style={styles.content}>
         <View style={styles.header}>
           <Text style={styles.headerText}>Tomey</Text>
+          <ThemeToggleButton />
         </View>
         <View style={styles.mainContent}>
           <NavMenu />
