@@ -11,24 +11,23 @@ export default function NavMenu() {
   const { width } = useWindowDimensions()
   const isLargeScreen = width >= 768;
 
-  // Create an animated value for the menu position
+  // start the animation offscreen to the left
   const slideAnim = useRef(new Animated.Value(-325)).current;
   
-  // Track screen dimensions
   useEffect(() => {
     if (isLargeScreen) {
-      setOpen(true); // Always open on large screens
+      setOpen(true); // open on large screens
     } else {
-      setOpen(false); // Always closed by default on small screens
+      setOpen(false); // close on small screens
     }
   }, [isLargeScreen]);
 
-  // Update animation when open state or screen size changes
+  // update the animation when the open state changes or when changing the open state
   useEffect(() => {
     Animated.timing(slideAnim, {
       toValue: open || isLargeScreen ? 0 : -325,
-      duration: 200, // Animation duration in ms
-      useNativeDriver: true, // Enable native driver for better performance
+      duration: 200, // time the animation takes
+      useNativeDriver: Platform.OS !== 'web', // native driver for better performance
     }).start();
   }, [open]);
     

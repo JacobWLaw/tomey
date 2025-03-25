@@ -1,19 +1,29 @@
-import { useQuery } from '@tanstack/react-query';
+import { useState, useEffect } from 'react';
 import { Book } from '../../types/Book';
 
-async function fetchBooks(): Promise<Book[]> {
-  const response = await fetch('http://localhost:4000/api/books');
-  if (!response.ok) {
-    throw new Error(`HTTP error: ${response.status}`);
-  }
-  return response.json();
-}
-
 export function useBooks() {
-  const { data: books = [], isLoading: loading, error } = useQuery({
-    queryKey: ['books'],
-    queryFn: fetchBooks,
-  });
+  const [books, setBooks] = useState<Book[]>([]);
+  const [loading, setLoading] = useState(true);
+  const [error, setError] = useState<string | null>(null);
 
-  return { books, loading, error: error ? (error as Error).message : null };
+  useEffect(() => {
+    const fetchBooks = async () => {
+      try {
+        const response = await fetch('http://localhost:4000/api/books');
+        if (!response.ok) {
+          throw new Error(`HTTP error: ${response.status}`);
+        }
+        const data = await response.json();
+        setBooks(data);
+      } catch (err) {
+        setError(err instanceof Error ? err.message : 'An error occurred');
+      } finally {
+        setLoading(false);
+      }
+    };
+
+    fetchBooks();
+  }, []);
+
+  return { books, loading, error };
 }

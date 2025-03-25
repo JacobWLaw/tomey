@@ -1,6 +1,5 @@
 import React from 'react';
 import { View, Text, StyleSheet } from 'react-native';
-import BookList from '../components/BookList';
 import { useThemedStyles } from '../theme/useThemedStyles';
 
 export default function Home() {

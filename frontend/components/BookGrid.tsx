@@ -6,7 +6,7 @@ import { useBooks } from "../hooks/useBooks";
 import { useThemedStyles } from "../theme/useThemedStyles";
 
 // Get device width to calculate column sizes
-const { width } = Dimensions.get("window");
+const width  = 1000;
 const numColumns = 8; // Number of columns in the grid
 const gap = 10; // Gap between items
 const itemWidth = (width - (numColumns + 1) * gap) / numColumns; // Calculate item width
