@@ -1,19 +1,11 @@
 import express from 'express';
 import supabase from '../config/SupabaseConfig';
-import { cacheData, getCachedData } from '../utils/caching';
 
 const router = express.Router();
 
 // GET /api/books
-router.get('/', async (req: any, res: any) => {
+router.get('/', async (req, res) => {
   try {
-    // Check cache first
-    const cachedBooks = await getCachedData('books');
-    if (cachedBooks) {
-      return res.json(cachedBooks);
-    }
-
-    // If not in cache, fetch from Supabase
     const { data, error } = await supabase
       .from('Book')
       .select('*');
@@ -21,9 +13,6 @@ router.get('/', async (req: any, res: any) => {
     if (error) {
       throw error;
     }
-    
-    // Cache the result
-    await cacheData('books', data, 300); // Cache for 5 minutes
     
     res.json(data);
   } catch (error) {
