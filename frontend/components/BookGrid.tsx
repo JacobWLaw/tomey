@@ -1,34 +1,40 @@
 import React from "react";
 import { useState } from "react";
 import { Book } from "../../types/Book";
-import { FlatList, Text, View, StyleSheet, Image, Dimensions, TouchableOpacity } from "react-native";
+import { FlatList, Text, View, Image, TouchableOpacity, useWindowDimensions } from "react-native";
 import { useBooks } from "../hooks/useBooks";
 import { useThemedStyles } from "../theme/useThemedStyles";
 
-// Get device width to calculate column sizes
-const width  = 1000;
-const numColumns = 8; // Number of columns in the grid
+const numColumns = 5; // Number of columns in the grid
 const gap = 10; // Gap between items
-const itemWidth = (width - (numColumns + 1) * gap) / numColumns; // Calculate item width
+const staticItemWidth = 125
+const minGridWidth = numColumns * staticItemWidth + (numColumns - 1) * gap + 2 * gap;
+
 
 export default function BookGrid() {
     const { books, loading, error } = useBooks();
+    const {width}  = useWindowDimensions();
 
     const styles = useThemedStyles(theme => ({
         container: {
             flex: 1,
             padding: gap,
+            minWidth: minGridWidth,
+            overflow: 'hidden',
             backgroundColor: theme.colors.background,
         },
         grid: {
-            padding: gap / 2,
+            padding: gap,
+            minWidth: minGridWidth,
         },
         row: {
-            justifyContent: 'center',
-            marginBottom: gap,
+            flexDirection: 'row',
+            flexWrap: 'nowrap',
+            justifyContent: 'flex-start', 
+            marginBottom: 0,
         },
         bookItem: {
-            width: itemWidth,
+            width: staticItemWidth,
             backgroundColor: theme.colors.background,
             borderRadius: 8,
             overflow: 'hidden',
@@ -37,10 +43,11 @@ export default function BookGrid() {
             shadowOpacity: 0.1,
             shadowRadius: 4,
             elevation: 3,
+            margin: gap
         },
         coverImage: {
             width: '100%',
-            height: itemWidth * 1.5, // 3:2 aspect ratio for book covers
+            height: staticItemWidth * 1.5,
             backgroundColor: theme.colors.background,
         },
         title: {
@@ -65,14 +72,13 @@ export default function BookGrid() {
         }
     }));
     
-    // Book item renderer
     const renderBookItem = ({ item }: { item: Book }) => (
         <TouchableOpacity 
             style={styles.bookItem}
             onPress={() => console.log(`Book selected: ${item.title}`)}
         >
             <Image 
-                source={{ uri: item.coverImage || 'https://via.placeholder.com/150x200?text=No+Cover' }} 
+                source={{ uri: item.coverImage || 'https://mdngpopbogrhbrqwrsbq.supabase.co/storage/v1/object/sign/tomey/CoverNotAvailable%20(1).jpg?token=eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJ1cmwiOiJ0b21leS9Db3Zlck5vdEF2YWlsYWJsZSAoMSkuanBnIiwiaWF0IjoxNzQzMDE3NTIyLCJleHAiOjQ4NjUwODE1MjJ9.DezQbiXLI5nt8nkphFPZaV8wId09HQusXdXfAStwmwo' }} 
                 style={styles.coverImage}
                 resizeMode="cover"
             />
@@ -93,7 +99,7 @@ export default function BookGrid() {
                 keyExtractor={(item) => item.id.toString()}
                 numColumns={numColumns}
                 contentContainerStyle={styles.grid}
-                columnWrapperStyle={styles.row} // Style for each row in the grid
+                columnWrapperStyle={styles.row} 
                 showsVerticalScrollIndicator={false}
             />
         </View>

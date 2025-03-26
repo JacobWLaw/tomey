@@ -1,6 +1,6 @@
 import { StatusBar } from 'expo-status-bar';
 import React from 'react';
-import { View, SafeAreaView, Text } from 'react-native';
+import { View, SafeAreaView, Text, useWindowDimensions } from 'react-native';
 import { Slot } from 'expo-router';
 import { ThemeProvider, useTheme } from '../theme/ThemeContext';
 import { useThemedStyles } from '../theme/useThemedStyles';
@@ -9,36 +9,46 @@ import ThemeToggleButton from '../components/ThemeToggle';
 
 const AppContent = () => {
   const { theme, isDark } = useTheme();
-  
-  const styles = useThemedStyles(theme => ({
+  const { width } = useWindowDimensions();
+  const isLargeScreen = width >= 900;
+
+  const styles = useThemedStyles((theme) => ({
     container: {
       flex: 1,
       backgroundColor: theme.colors.background,
+      borderWidth: 0,
     },
     content: {
       flex: 1,
-      padding: theme.spacing.md,
-      
+      padding: 0,
     },
     header: {
       flexDirection: "row",
       justifyContent: "space-between",
       height: 60,
       backgroundColor: theme.colors.card,
-      alignItems: 'center',
+      alignItems: "center",
       borderBottomWidth: 1,
       borderBottomColor: theme.colors.border,
       paddingTop: theme.spacing.md, // Add padding for status bar
     },
     headerText: {
       fontSize: theme.fontSize.xlarge,
-      fontWeight: 'bold',
+      fontWeight: "bold",
       color: theme.colors.text,
       marginLeft: theme.spacing.sm,
-      marginBottom: theme.spacing.md
+      marginBottom: theme.spacing.md,
     },
     mainContent: {
       flex: 1,
+      flexDirection: "row", // Change to horizontal layout
+    },
+    navMenu: {
+      width: isLargeScreen ? 300 : 0,
+    },
+    slotContent: {
+      flex: 1,
+      padding: theme.spacing.md,
     },
   }));
 
@@ -49,12 +59,20 @@ const AppContent = () => {
           <Text style={styles.headerText}>Tomey</Text>
           <ThemeToggleButton />
         </View>
+
         <View style={styles.mainContent}>
-          <NavMenu />
-          <Slot />
+          {isLargeScreen && (
+            <View style={styles.navMenu}>
+              <NavMenu />
+          </View>
+          )}
+          <View style={styles.slotContent}>
+            {!isLargeScreen ? <NavMenu /> : null}
+            <Slot />
+          </View>
         </View>
       </View>
-      <StatusBar style={isDark ? 'light' : 'dark'} />
+      <StatusBar style={isDark ? "light" : "dark"} />
     </SafeAreaView>
   );
 };

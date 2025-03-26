@@ -9,7 +9,7 @@ export default function NavMenu() {
   const [open, setOpen] = useState(false);
   const { theme } = useTheme();
   const { width } = useWindowDimensions()
-  const isLargeScreen = width >= 768;
+  const isLargeScreen = width >= 900;
 
   // start the animation offscreen to the left
   const slideAnim = useRef(new Animated.Value(-325)).current;
